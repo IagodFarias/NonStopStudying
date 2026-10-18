@@ -1,0 +1,39 @@
+{
+  "name": "ypt-squads",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:host": "vite --host",
+    "dev:emulators": "vite --mode emulators",
+    "emulators": "firebase emulators:start --only auth,database --project demo-ypt",
+    "test": "node tests/state.test.mjs && npm run test:rules",
+    "test:state": "node tests/state.test.mjs",
+    "test:rules": "firebase emulators:exec --only auth,database --project demo-ypt \"node tests/rules.test.mjs\"",
+    "deploy:rules": "firebase deploy --only database",
+    "deploy:web": "vite build && firebase deploy --only hosting",
+    "build": "vite build",
+    "preview": "vite preview",
+    "android": "vite build && cap run android",
+    "android:apk": "vite build && cap sync android && cd android && gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "firebase": "^13.0.0",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.15.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
+    "@tailwindcss/vite": "^4.1.8",
+    "@vitejs/plugin-react": "^4.4.1",
+    "firebase-tools": "^15.34.0",
+    "tailwindcss": "^4.1.8",
+    "vite": "^6.3.5"
+  }
+}

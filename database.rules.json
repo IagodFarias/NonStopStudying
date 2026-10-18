@@ -1,0 +1,110 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 24" },
+        "groupId": { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "invites": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null && ((!data.exists() && newData.parent().parent().child('groups').child(newData.val()).child('ownerId').val() === auth.uid) || (!newData.exists() && root.child('groups').child(data.val()).child('ownerId').val() === auth.uid))",
+        ".validate": "newData.isString() && $code.matches(/^[A-Z0-9]{6}$/)"
+      }
+    },
+
+    "groups": {
+      "$gid": {
+        ".read": "auth != null && data.child('members').child(auth.uid).exists()",
+        ".write": "auth != null && ((!data.exists() && newData.child('ownerId').val() === auth.uid && newData.child('members').child(auth.uid).exists()) || (!newData.exists() && data.child('ownerId').val() === auth.uid))",
+        ".validate": "newData.hasChildren(['name', 'ownerId', 'inviteCode'])",
+        "name": {
+          ".write": "auth != null && data.parent().child('ownerId').val() === auth.uid",
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 40"
+        },
+        "ownerId": {
+          ".write": "auth != null && data.val() === auth.uid",
+          ".validate": "newData.isString() && newData.parent().child('members').child(newData.val()).exists()"
+        },
+        "inviteCode": { ".validate": "newData.isString() && newData.val().matches(/^[A-Z0-9]{6}$/)" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "members": {
+          "$uid": {
+            ".write": "auth != null && (auth.uid === $uid || root.child('groups').child($gid).child('ownerId').val() === auth.uid)",
+            ".validate": "newData.hasChildren(['name', 'joinedAt']) && (data.exists() || newData.child('code').val() === newData.parent().parent().child('inviteCode').val() || newData.parent().parent().child('ownerId').val() === auth.uid)",
+            "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 24" },
+            "squadId": { ".validate": "newData.isString() && newData.val().length <= 40" },
+            "joinedAt": { ".validate": "newData.isNumber()" },
+            "code": { ".validate": "newData.isString()" },
+            "$other": { ".validate": false }
+          }
+        },
+        "squads": {
+          "$sid": {
+            ".write": "auth != null && root.child('groups').child($gid).child('members').child(auth.uid).exists() && (newData.exists() || root.child('groups').child($gid).child('ownerId').val() === auth.uid)",
+            ".validate": "newData.hasChildren(['name', 'color', 'targetHoursPerMember'])",
+            "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 28" },
+            "color": { ".validate": "newData.isString() && newData.val().matches(/^#[0-9A-Fa-f]{6}$/)" },
+            "motto": { ".validate": "newData.isString() && newData.val().length <= 60" },
+            "targetHoursPerMember": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 16" },
+            "createdAt": { ".validate": "newData.isNumber()" },
+            "$other": { ".validate": false }
+          }
+        },
+        "live": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('groups').child($gid).child('members').child(auth.uid).exists()",
+            "online": { ".validate": "newData.isBoolean()" },
+            "studying": { ".validate": "newData.isBoolean()" },
+            "subject": { ".validate": "newData.isString() && newData.val().length <= 40" },
+            "color": { ".validate": "newData.isString() && newData.val().matches(/^#[0-9A-Fa-f]{6}$/)" },
+            "startedAt": { ".validate": "newData.isNumber()" },
+            "base": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 86400" },
+            "dayKey": { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)" },
+            "updatedAt": { ".validate": "newData.isNumber()" },
+            "lastSeen": { ".validate": "newData.isNumber()" },
+            "$other": { ".validate": false }
+          }
+        },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "groupDays": {
+      "$gid": {
+        ".read": "auth != null && root.child('groups').child($gid).child('members').child(auth.uid).exists()",
+        ".write": "auth != null && !newData.exists() && root.child('groups').child($gid).child('ownerId').val() === auth.uid",
+        "$day": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('groups').child($gid).child('members').child(auth.uid).exists()",
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 86400 && $day.matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)"
+          }
+        }
+      }
+    },
+
+    "messages": {
+      "$gid": {
+        ".read": "auth != null && root.child('groups').child($gid).child('members').child(auth.uid).exists()",
+        ".write": "auth != null && !newData.exists() && root.child('groups').child($gid).child('ownerId').val() === auth.uid",
+        "$mid": {
+          ".write": "auth != null && !data.exists() && root.child('groups').child($gid).child('members').child(auth.uid).exists()",
+          ".validate": "newData.hasChildren(['uid', 'name', 'text', 'ts']) && newData.child('uid').val() === auth.uid && newData.child('ts').val() === now",
+          "uid": { ".validate": "newData.isString()" },
+          "name": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 24" },
+          "text": { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 1000" },
+          "ts": { ".validate": "newData.isNumber()" },
+          "$other": { ".validate": false }
+        }
+      }
+    }
+  }
+}

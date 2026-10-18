@@ -1,0 +1,12 @@
+{
+  "appId": "com.yptsquads.app",
+  "appName": "YPT Squads",
+  "webDir": "dist",
+  "backgroundColor": "#121212",
+  "plugins": {
+    "SystemBars": {
+      "style": "DARK",
+      "initialViewportFitValueHint": "cover"
+    }
+  }
+}

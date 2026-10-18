@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+/* Identidade "Obsidian Dark": escada de fundos escuros + acentos vibrantes.
+   Cada cor vira utilitário do Tailwind (bg-surface, text-muted, border-line, bg-primary/15...). */
+@theme {
+  --color-ink: #06080d; /* navegação principal e áreas externas */
+  --color-shell: #0b0f19; /* seções secundárias, listas e cabeçalhos */
+  --color-surface: #101624; /* fundo das telas, conteúdo e chat */
+  --color-card: #182135; /* cards, tarefas, balões e inputs */
+  --color-raised: #1f2a44; /* hover e elementos elevados sobre cards */
+  --color-line: #26324d; /* bordas e divisórias */
+  --color-primary: #2480f0; /* botões, links, progresso e seleção */
+  --color-online: #10b981; /* online / em foco */
+  --color-flame: #ff6b00; /* chama: estudo ativo */
+  --color-amber: #f59e0b;
+  --color-fg: #ffffff;
+  --color-muted: #8a9cae; /* texto secundário / offline */
+  --color-danger: #f43f5e;
+
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+html {
+  color-scheme: dark;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  background: var(--color-surface);
+}
+
+body {
+  margin: 0;
+  overscroll-behavior-y: none;
+}
+
+@keyframes ypt-flicker {
+  0%,
+  100% {
+    transform: scale(1) rotate(-3deg);
+  }
+  30% {
+    transform: scale(1.12) rotate(2deg);
+  }
+  60% {
+    transform: scale(0.94) rotate(-1deg);
+  }
+  80% {
+    transform: scale(1.06) rotate(3deg);
+  }
+}
+
+@keyframes ypt-glow {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.07);
+  }
+}
+
+@keyframes ypt-sheet {
+  from {
+    transform: translateY(28px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes ypt-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ypt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ypt-toast {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ypt-flicker {
+  animation: ypt-flicker 1.5s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+
+/* elementos SVG precisam de transform-box para girar em torno do próprio desenho */
+.ypt-flicker-svg {
+  animation: ypt-flicker 1.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.ypt-glow {
+  animation: ypt-glow 2.4s ease-in-out infinite;
+}
+
+.ypt-glow-svg {
+  animation: ypt-glow 2.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ypt-sheet {
+  animation: ypt-sheet 0.22s ease-out;
+}
+
+.ypt-fade {
+  animation: ypt-fade 0.25s ease-out;
+}
+
+.ypt-fade-in {
+  animation: ypt-fade-in 0.2s ease-out;
+}
+
+.ypt-toast {
+  animation: ypt-toast 0.2s ease-out;
+}
+
+.ypt-no-scrollbar {
+  scrollbar-width: none;
+}
+
+.ypt-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ypt-flicker,
+  .ypt-flicker-svg,
+  .ypt-glow,
+  .ypt-glow-svg,
+  .ypt-sheet,
+  .ypt-fade,
+  .ypt-fade-in,
+  .ypt-toast {
+    animation: none;
+  }
+}
